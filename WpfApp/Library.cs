@@ -67,12 +67,6 @@ class Context
     public Dictionary<string, PinyinEntry> pinyins;
     public Dictionary<string, PinyinEntry> pinyinsNoTones;
 
-    void AddInterpunction(string s)
-    {
-        var ss = new string[] { s };
-        CharEntry.AddTo(characters, s, new Entry { simp = ss, trad = ss, pinyin = new string[] { }, english = new string[] { } }).s = ss;
-    }
-
     public Context()
     {
         entries = new List<Entry>();
@@ -100,8 +94,6 @@ class Context
             PinyinEntry.AddTo(pinyins, string.Join("", e.pinyin.Where(p => EndsInNumber(p))), e);
             PinyinEntry.AddTo(pinyinsNoTones, string.Join("", e.pinyin.Where(p => EndsInNumber(p)).Select(p => RemoveToneNumber(p))), e);
         }
-        AddInterpunction("，");
-        AddInterpunction("。");
     }
 
     public List<SearchState<T, string[]>.Entry> Search<T>(IEnumerable<T> l, Func<T, string[]> f, string key)
@@ -167,35 +159,34 @@ class Context
         public List<Entry> Search(S s)
         {
             List<Entry> result;
-            if (!cache.TryGetValue(s, out result))
+            while (true)
             {
+                if (cache.TryGetValue(s, out result))
+                    return result;
                 if (length(s) == 0)
-                    result = new List<Entry>();
-                else
+                    return new List<Entry>();
+                foreach (T e in l)
                 {
-                    foreach (T e in l)
+                    var key = f(e);
+                    int l = length(key);
+                    if (l > 0 && startsWith(s, key))
                     {
-                        var key = f(e);
-                        int l = length(key);
-                        if (l > 0 && startsWith(s, key))
+                        var entry = new Entry { e = e, key = key, following = Search(substring(s, l)) };
+                        if (entry.following != null)
                         {
-                            var entry = new Entry { e = e, key = key, following = Search(substring(s, l)) };
-                            if (entry.following != null)
+                            if (result == null)
                             {
-                                if (result == null)
-                                {
-                                    result = new List<Entry>();
-                                    cache.Add(s, result);
-                                }
-                                result.Add(entry);
+                                result = new List<Entry>();
+                                cache.Add(s, result);
                             }
+                            result.Add(entry);
                         }
                     }
-                    if (result != null)
-                        result = result.OrderByDescending(ee => length(ee.key)).ToList();
                 }
+                if (result != null)
+                    return result.OrderByDescending(ee => length(ee.key)).ToList();
+                s = substring(s, 1);
             }
-            return result;
         }
     }
     static bool ContainsPinyinNumNonIdiom(Entry e, string pinyin)
