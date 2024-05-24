@@ -1,0 +1,39 @@
+﻿<Window x:Class="WpfApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d" Background="#f0ffe8"
+        Title="Chinese" Height="450" Width="800" FontSize="16">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="tbxSearch"/>
+        <Button Grid.Column="2" Padding="10,3" Click="Button_Click" IsDefault="True" x:Name="btnSearch">Search</Button>
+        <TreeView x:Name="trv" Grid.Row="2" Grid.ColumnSpan="3" Background="White">
+            <!--<TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="True"/>
+                </Style>
+            </TreeView.ItemContainerStyle>-->
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local:MyList}" ItemsSource="{Binding}">
+                    <TextBox Text="{Binding Header}" BorderThickness="0" />
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type System:String}">
+                    <TextBox Text="{Binding Path=., Mode=OneWay}" BorderThickness="0" />
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+    </Grid>
+</Window>
