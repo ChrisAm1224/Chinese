@@ -172,6 +172,7 @@ class Context
                 if (length(s) == 0)
                     result = new List<Entry>();
                 else
+                {
                     foreach (T e in l)
                     {
                         var key = f(e);
@@ -189,9 +190,10 @@ class Context
                                 result.Add(entry);
                             }
                         }
-                        if (result != null)
-                            result = result.OrderByDescending(ee => length(ee.key)).ToList();
                     }
+                    if (result != null)
+                        result = result.OrderByDescending(ee => length(ee.key)).ToList();
+                }
             }
             return result;
         }
