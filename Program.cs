@@ -20,10 +20,8 @@ namespace Chinese
             foreach (var kvp in d)
                 arr[kvp.Value] = kvp.Key;
 
-            while (true)
+            while (entries != null && 0 < entries.Count)
             {
-                if (entries == null || entries.Count == 0)
-                    break;
                 var entry = entries[0];
                 print(entry.e.Value);
                 entries = entry.following;
